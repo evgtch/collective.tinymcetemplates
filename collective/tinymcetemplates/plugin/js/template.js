@@ -38,7 +38,7 @@ var TemplateDialog = {
                     var url = tinyMCETemplateList[keys[f]][x][1];
                     var descr = tinyMCETemplateList[keys[f]][x][2];
                     var option = new Option(title, tinyMCEPopup.editor.documentBaseURI.toAbsolute(url));
-                    option.label = descr;
+                    option.setAttribute('data-description', descr);
                     tselect.getElementsByTagName('select')[0].add(option);
                 }
 
