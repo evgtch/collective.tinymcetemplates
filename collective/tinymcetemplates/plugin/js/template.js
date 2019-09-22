@@ -38,7 +38,6 @@ var TemplateDialog = {
                 tselect.getElementsByTagName('select')[0].setAttribute('name', 'tpath_'+f);
                 tselect.getElementsByTagName('label')[0].setAttribute('for', 'tpath_'+f);
                 tselect.getElementsByTagName('label')[0].textContent = keys[f];
-                tselect.getElementsByTagName('span')[0].remove();
 
                 sel.parentNode.insertBefore(tselect, sel);
             }
