@@ -13,22 +13,41 @@ var TemplateDialog = {
     },
 
     init : function() {
-        var ed = tinyMCEPopup.editor, tsrc, sel, x, u;
-        
-        
+        var ed = tinyMCEPopup.editor, tsrc, sel, x, u, keys, f;
+
         // Load templates from an explicit parameter. By default, we don't
         // use this
         tsrc = ed.getParam("template_templates", false);
-        sel = document.getElementById('tpath');
+        sel = document.getElementById('tselect');
 
         // Use external template list as a fallback
         if (!tsrc && typeof(tinyMCETemplateList) != 'undefined') {
-            for (x=0, tsrc = []; x<tinyMCETemplateList.length; x++)
-                tsrc.push({title : tinyMCETemplateList[x][0], src : tinyMCETemplateList[x][1], description : tinyMCETemplateList[x][2]});
+            keys = Object.keys(tinyMCETemplateList);
+            for (f=0; f<keys.length; f++) {
+                tsrc = [];
+                for (x=0; x < tinyMCETemplateList[keys[f]].length; x++)
+                    tsrc.push({
+                        title : tinyMCETemplateList[keys[f]][x][0],
+                        src : tinyMCETemplateList[keys[f]][x][1],
+                        description : tinyMCETemplateList[keys[f]][x][2]
+                    });
+
+                var tselect = sel.cloneNode(true);
+                tselect.setAttribute('id', 'tselect_'+f);
+                tselect.getElementsByTagName('select')[0].setAttribute('id', 'tpath_'+f);
+                tselect.getElementsByTagName('select')[0].setAttribute('name', 'tpath_'+f);
+                tselect.getElementsByTagName('label')[0].setAttribute('for', 'tpath_'+f);
+                tselect.getElementsByTagName('label')[0].textContent = keys[f];
+                tselect.getElementsByTagName('span')[0].remove();
+
+                sel.parentNode.insertBefore(tselect, sel);
+            }
+            sel.remove();
         }
 
-        for (x=0; x<tsrc.length; x++)
-            sel.options[sel.options.length] = new Option(tsrc[x].title, tinyMCEPopup.editor.documentBaseURI.toAbsolute(tsrc[x].src));
+        //sel = sel.getElementById('tpath');
+        //for (x=0; x<tsrc.length; x++)
+        //    sel.options[sel.options.length] = new Option(tsrc[x].title, tinyMCEPopup.editor.documentBaseURI.toAbsolute(tsrc[x].src));
 
         this.resize();
         this.tsrc = tsrc;
@@ -44,7 +63,7 @@ var TemplateDialog = {
             w = self.innerWidth - 50;
             h = self.innerHeight - 170;
         }
-        
+
         e = document.getElementById('templatesrc');
 
         if (e) {
