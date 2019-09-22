@@ -14,7 +14,7 @@
                 <div class="title" i18n:translate="template_dlg_desc"></div>
                 <div class="frmRow" id="tselect">
                     <label for="tpath" i18n:attributes="title template_dlg_select" i18n:translate="template_dlg_label"></label>
-                    <select id="tpath" name="tpath" onchange="TemplateDialog.selectTemplate(this.options[this.selectedIndex].value, this.options[this.selectedIndex].text);" class="mceFocus">
+                    <select id="tpath" name="tpath" onchange="TemplateDialog.selectTemplate(this.options[this.selectedIndex].value, this.options[this.selectedIndex].text, this.options[this.selectedIndex].label);" class="mceFocus">
                         <option value="" i18n:translate="template_dlg_select"></option>
                     </select>
                 </div>

@@ -13,25 +13,18 @@ var TemplateDialog = {
     },
 
     init : function() {
-        var ed = tinyMCEPopup.editor, tsrc, sel, x, u, keys, f;
+        var ed = tinyMCEPopup.editor, x, u, f;
 
         // Load templates from an explicit parameter. By default, we don't
         // use this
-        tsrc = ed.getParam("template_templates", false);
-        sel = document.getElementById('tselect');
+        var tsrc = ed.getParam("template_templates", false);
+        var sel = document.getElementById('tselect');
 
         // Use external template list as a fallback
         if (!tsrc && typeof(tinyMCETemplateList) != 'undefined') {
-            keys = Object.keys(tinyMCETemplateList);
+            var keys = Object.keys(tinyMCETemplateList);
             for (f=0; f<keys.length; f++) {
-                tsrc = [];
-                for (x=0; x < tinyMCETemplateList[keys[f]].length; x++)
-                    tsrc.push({
-                        title : tinyMCETemplateList[keys[f]][x][0],
-                        src : tinyMCETemplateList[keys[f]][x][1],
-                        description : tinyMCETemplateList[keys[f]][x][2]
-                    });
-
+                // Prepare new selector by cloning existing one.
                 var tselect = sel.cloneNode(true);
                 tselect.setAttribute('id', 'tselect_'+f);
                 tselect.getElementsByTagName('select')[0].setAttribute('id', 'tpath_'+f);
@@ -39,17 +32,28 @@ var TemplateDialog = {
                 tselect.getElementsByTagName('label')[0].setAttribute('for', 'tpath_'+f);
                 tselect.getElementsByTagName('label')[0].textContent = keys[f];
 
+                // Add options.
+                for (x=0; x < tinyMCETemplateList[keys[f]].length; x++) {
+                    var title = tinyMCETemplateList[keys[f]][x][0];
+                    var url = tinyMCETemplateList[keys[f]][x][1];
+                    var descr = tinyMCETemplateList[keys[f]][x][2];
+                    var option = new Option(title, tinyMCEPopup.editor.documentBaseURI.toAbsolute(url));
+                    option.label = descr;
+                    tselect.getElementsByTagName('select')[0].add(option);
+                }
+
+                // Add new selector.
                 sel.parentNode.insertBefore(tselect, sel);
             }
+            // Remove original selector.
             sel.remove();
+        } else {
+            sel = document.getElementById('tpath');
+            for (x=0; x<tsrc.length; x++)
+               sel.options[sel.options.length] = new Option(tsrc[x].title, tinyMCEPopup.editor.documentBaseURI.toAbsolute(tsrc[x].src));
         }
 
-        //sel = sel.getElementById('tpath');
-        //for (x=0; x<tsrc.length; x++)
-        //    sel.options[sel.options.length] = new Option(tsrc[x].title, tinyMCEPopup.editor.documentBaseURI.toAbsolute(tsrc[x].src));
-
         this.resize();
-        this.tsrc = tsrc;
     },
 
     resize : function() {
@@ -79,18 +83,14 @@ var TemplateDialog = {
         });
     },
 
-    selectTemplate : function(u, ti) {
-        var d = window.frames['templatesrc'].document, x, tsrc = this.tsrc;
+    selectTemplate : function(url, title, descr) {
+        var d = window.frames['templatesrc'].document;
 
-        if (!u)
+        if (!url)
             return;
 
-        d.body.innerHTML = this.templateHTML = this.getFileContents(u);
-
-        for (x=0; x<tsrc.length; x++) {
-            if (tsrc[x].title == ti)
-                document.getElementById('tmpldesc').innerHTML = tsrc[x].description || '';
-        }
+        d.body.innerHTML = this.templateHTML = this.getFileContents(url);
+        document.getElementById('tmpldesc').innerHTML = descr || '';
     },
 
     insert : function() {
